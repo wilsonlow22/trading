@@ -29,15 +29,32 @@ public class TradeController {
         Userdetail user = userRepository.findByUsername(username);
         Price price = priceRepository.findBySymbol(symbol);
 
-        if (user == null || price == null) {
-            return "User or Price not found";
+        if (user == null) {
+            return "User not found";
+        }
+
+        if (price == null) {
+            return "Price not found";
         }
 
         double cost = amount * price.getAskPrice();
-        if (user.getWalletBalance() < cost) {
-            return "Insufficient funds";
+        if (user.getUsdt_quantity() < cost) {
+            return "Insufficient USTD";
         }
         
+        // update user's ethusdt quantity or btcusdt quantity based on symbol
+        if (symbol.toLowerCase().equals("ethusdt") || symbol.toLowerCase().equals("eth")) {
+            user.setEthusdt_quantity(user.getEthusdt_quantity() + amount);
+        } else if (symbol.toLowerCase().equals("btcusdt") || symbol.toLowerCase().equals("btc")) {
+            user.setBtcusdt_quantity(user.getBtcusdt_quantity() + amount);
+        } else {
+            return "Invalid symbol";
+        }
+        
+        // update user's USDT quantity
+       user.setUsdt_quantity(user.getUsdt_quantity() - cost);
+       userRepository.save(user);
+
         // add TradeHistory
         TradeHistory trade = new TradeHistory();
         trade.setUserId(user.getId());
@@ -47,11 +64,7 @@ public class TradeController {
         trade.setTradeTime(LocalDateTime.now());
         tradeHistoryRepository.save(trade);
         
-        // update user wallet balance
-       user.setWalletBalance(user.getWalletBalance() - cost);
-       userRepository.save(user);
-
-        return "Trade successful";
+        return "Buy Trade successful";
     }
 
     @PostMapping("/sell")
@@ -59,9 +72,33 @@ public class TradeController {
         Userdetail user = userRepository.findByUsername(username);
         Price price = priceRepository.findBySymbol(symbol);
 
-        if (user == null || price == null) {
-            return "User or Price not found";
+        if (user == null) {
+            return "User not found";
         }
+
+        if (price == null) {
+            return "Price not found";
+        }
+
+        // check user's ethusdt quantity or btcusdt quantity based on symbol
+        if (symbol.toLowerCase().equals("ethusdt") || symbol.toLowerCase().equals("eth")) {
+            if (user.getEthusdt_quantity() < amount) {
+                return "Insufficient ETH";
+            }
+            user.setEthusdt_quantity(user.getEthusdt_quantity() - amount);
+        } else if (symbol.toLowerCase().equals("btcusdt") || symbol.toLowerCase().equals("btc")) {
+            if (user.getBtcusdt_quantity() < amount) {
+                return "Insufficient BTC";
+            }
+            user.setBtcusdt_quantity(user.getBtcusdt_quantity() - amount);
+        } else {
+            return "Invalid symbol";
+        }
+
+        // update user USDT quantity
+        double totalBidPrice = amount * price.getBidPrice();
+        user.setUsdt_quantity(user.getUsdt_quantity() + totalBidPrice);
+        userRepository.save(user);
 
         // add TradeHistory
         TradeHistory trade = new TradeHistory();
@@ -72,12 +109,7 @@ public class TradeController {
         trade.setTradeTime(LocalDateTime.now());
         tradeHistoryRepository.save(trade);
 
-        // update user wallet balance
-        double cost = amount * price.getBidPrice();
-        user.setWalletBalance(user.getWalletBalance() + cost);
-        userRepository.save(user);
-
-        return "Trade successful";
+        return "Sell Trade successful";
     }
 }
 

@@ -12,9 +12,16 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/{username}/balance")
-    public Double getBalance(@PathVariable String username) {
-        Userdetail user = userRepository.findByUsername(username);
-        return user != null ? user.getWalletBalance() : null;
+    // display all users
+    @GetMapping("")
+    public Iterable<Userdetail> getAllUsers() {
+        return userRepository.findAll();
     }
+
+    // get user's wallet balance of all quantity of USDT, ETH, BTC
+    @GetMapping("/{username}")
+    public Userdetail getUser(@PathVariable String username) {
+        return userRepository.findByUsername(username);
+    }
+    
 }

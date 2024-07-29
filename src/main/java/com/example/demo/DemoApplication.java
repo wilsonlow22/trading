@@ -17,7 +17,9 @@ public class DemoApplication {
 
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(DemoApplication.class, args);
-		System.out.println("Testing only!!!!!!!!!!!!!!!!");
+		System.out.println("Running the application...");
+
+        // Database connection parameters
 
 		String url = "jdbc:h2:mem:testdb"; // Example for H2 in-memory database
         String user = "sa";

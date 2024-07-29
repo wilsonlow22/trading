@@ -64,7 +64,15 @@ public class TradeController {
         trade.setTradeTime(LocalDateTime.now());
         tradeHistoryRepository.save(trade);
         
-        return "Buy Trade successful";
+        // return success message with the trade details of balance
+        String message = "Buy Trade successful\n";
+        message += "Buy: " + amount + " " + symbol + "\n";
+        message += "Total Cost: " + cost + "\n";
+        message += "USDT Balance: " + user.getUsdt_quantity() + "\n";
+        message += "ETH Balance: " + user.getEthusdt_quantity() + "\n";
+        message += "BTC Balance: " + user.getBtcusdt_quantity() + "\n";
+
+        return message;        
     }
 
     @PostMapping("/sell")
@@ -109,7 +117,27 @@ public class TradeController {
         trade.setTradeTime(LocalDateTime.now());
         tradeHistoryRepository.save(trade);
 
-        return "Sell Trade successful";
+        // return success message with the trade details of balance
+        String message = "Sell Trade successful\n";
+        message += "Sell: " + amount + " " + symbol + "\n";
+        message += "Total Bid Price: " + totalBidPrice + "\n";
+        message += "USDT Balance: " + user.getUsdt_quantity() + "\n";
+        message += "ETH Balance: " + user.getEthusdt_quantity() + "\n";
+        message += "BTC Balance: " + user.getBtcusdt_quantity() + "\n";
+
+        return message;
+    }
+
+    // new method to allow buy or sell (eth or btc) with usdt
+    @PostMapping("/trade")
+    public String trade(@RequestParam String username, @RequestParam String symbol, @RequestParam Double amount, @RequestParam String tradeType) {
+        if (tradeType.toLowerCase().equals("buy")) {
+            return buy(username, symbol, amount);
+        } else if (tradeType.toLowerCase().equals("sell")) {
+            return sell(username, symbol, amount);
+        } else {
+            return "Invalid trade type";
+        }
     }
 }
 

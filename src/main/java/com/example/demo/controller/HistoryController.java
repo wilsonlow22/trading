@@ -9,16 +9,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/history")
 public class HistoryController {
-    //@Autowired
+    
+    @Autowired
     private TradeHistoryRepository tradeHistoryRepository;
 
     @Autowired
     public HistoryController(TradeHistoryRepository tradeHistoryRepository) {
         this.tradeHistoryRepository = tradeHistoryRepository;
     }
+    
+    @GetMapping("")
+    public List<TradeHistory> getAllHistory() {
+        return tradeHistoryRepository.findAll();
+    }
 
     @GetMapping("/{userId}")
     public List<TradeHistory> getUserHistory(@PathVariable Long userId) {
         return tradeHistoryRepository.findByUserId(userId);
     }
+
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/prices")
 public class PriceController {
 
-    // @Autowired
+    @Autowired
     private PriceRepository priceRepository;
 
     @Autowired

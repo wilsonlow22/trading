@@ -12,6 +12,7 @@ public class TradeHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long userId;
+    private String username;
     private String symbol;
     private Double tradeAmount;
     private String tradeType;
@@ -20,8 +21,9 @@ public class TradeHistory {
     public TradeHistory() {
     }
 
-    public TradeHistory(Long userId, String symbol, Double tradeAmount, LocalDateTime tradeTime) {
+    public TradeHistory(Long userId, String username, String symbol, Double tradeAmount, LocalDateTime tradeTime) {
         this.userId = userId;
+        this.username = username;
         this.symbol = symbol;
         this.tradeAmount = tradeAmount;
         this.tradeTime = tradeTime;
@@ -33,6 +35,10 @@ public class TradeHistory {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public String getUserName() {
+        return username;
     }
 
     public String getSymbol() {
@@ -57,6 +63,10 @@ public class TradeHistory {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setSymbol(String symbol) {
